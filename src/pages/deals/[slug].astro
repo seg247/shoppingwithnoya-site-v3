@@ -29,15 +29,12 @@ export async function getStaticPaths() {
 const { deal } = Astro.props as { deal: Deal };
 const base = import.meta.env.BASE_URL;
 
-function rewriteImage(url: string | null, asin?: string): string | null {
-  if (!url && asin) {
-    return `https://m.media-amazon.com/images/I/${asin}._AC_SL1500_.jpg`;
-  }
+function rewriteImage(url: string | null): string | null {
   if (!url) return null;
   return url.replace(/_AC_SR\d+,\d+_/, '_AC_SL1500_').replace(/_AC_SL\d+_/, '_AC_SL1500_');
 }
 
-const fullImage = rewriteImage(deal.imageUrl, deal.asin);
+const fullImage = rewriteImage(deal.imageUrl);
 const parsedPrice = deal.price ? parseFloat(deal.price.replace(/[^0-9.]/g, '')) : null;
 const originalPrice = parsedPrice && deal.discount > 0
   ? '$' + (parsedPrice / (1 - deal.discount / 100)).toFixed(2)

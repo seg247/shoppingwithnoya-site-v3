@@ -10,20 +10,10 @@ describe('rewriteImageUrl', () => {
     const url = 'https://m.media-amazon.com/images/I/test._AC_SR100,100_.jpg';
     expect(rewriteImageUrl(url, 'full')).toBe('https://m.media-amazon.com/images/I/test._AC_SL1500_.jpg');
   });
-  it('returns null for null', () => {
+  it('returns null for null (no ASIN fallback)', () => {
     expect(rewriteImageUrl(null, 'thumb')).toBeNull();
-  });
-  it('generates fallback from ASIN when imageUrl is null', () => {
-    expect(rewriteImageUrl(null, 'thumb', 'B08T83MCC8')).toBe(
-      'https://m.media-amazon.com/images/I/B08T83MCC8._AC_SR300,300_.jpg'
-    );
-    expect(rewriteImageUrl(null, 'full', 'B08T83MCC8')).toBe(
-      'https://m.media-amazon.com/images/I/B08T83MCC8._AC_SL1500_.jpg'
-    );
-  });
-  it('returns null when no imageUrl and no asin', () => {
-    expect(rewriteImageUrl(null, 'thumb')).toBeNull();
-    expect(rewriteImageUrl(null, 'thumb', undefined)).toBeNull();
+    expect(rewriteImageUrl(null, 'thumb', 'B08T83MCC8')).toBeNull();
+    expect(rewriteImageUrl(null, 'full', 'B08T83MCC8')).toBeNull();
   });
   it('handles urls without size suffix', () => {
     const url = 'https://m.media-amazon.com/images/I/test.jpg';

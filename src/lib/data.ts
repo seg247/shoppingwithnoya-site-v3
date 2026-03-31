@@ -20,13 +20,9 @@ export interface SiteData {
   posts: Deal[];
 }
 
-export function rewriteImageUrl(url: string | null, size: 'thumb' | 'full', asin?: string): string | null {
-  if (!url && asin) {
-    // Fallback: construct Amazon CDN URL from ASIN
-    // Try the high-res product image endpoint
-    const suffix = size === 'thumb' ? '_AC_SR300,300_' : '_AC_SL1500_';
-    return `https://m.media-amazon.com/images/I/${asin}.${suffix}.jpg`;
-  }
+export function rewriteImageUrl(url: string | null, size: 'thumb' | 'full', _asin?: string): string | null {
+  // Note: ASIN-based fallback URLs don't work (Amazon uses internal image IDs, not ASINs)
+  // Only real scraped imageUrls can be rewritten
   if (!url) return null;
   if (size === 'thumb') {
     return url.replace(/_AC_SR\d+,\d+_/, '_AC_SR300,300_')
