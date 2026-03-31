@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Deal, SiteData } from '../lib/data';
 import { fetchDeals } from '../lib/data';
 import { POLL_INTERVAL_MS } from '../lib/constants';
+import { CATEGORY_KEYWORDS } from '../lib/keywords';
 import type { FilterState } from '../components/feed/FilterBar';
 
 export function useFeedData() {
@@ -46,13 +47,19 @@ export function useFeedData() {
 export function filterAndSort(deals: Deal[], filters: FilterState): Deal[] {
   let result = [...deals];
 
-  // Category filter — multi-select
+  // Category filter — multi-select, matches category + title keywords
   if (filters.categories.size > 0) {
     result = result.filter((d) => {
-      // "fire" is a special key matching FIRE + HOT ratings
-      if (filters.categories.has('fire') && (d.rating === 'FIRE' || d.rating === 'HOT')) return true;
-      // Match by category name
-      return filters.categories.has(d.category);
+      const searchText = ((d.category || '') + ' ' + (d.title || '')).toLowerCase();
+      return [...filters.categories].some(cat => {
+        // "fire" is a special key matching FIRE + HOT ratings
+        if (cat === 'fire') return d.rating === 'FIRE' || d.rating === 'HOT';
+        // Check keyword match against title + category
+        const keywords = CATEGORY_KEYWORDS[cat];
+        if (keywords) return keywords.some(k => searchText.includes(k));
+        // Exact category match fallback
+        return d.category === cat;
+      });
     });
   }
 
