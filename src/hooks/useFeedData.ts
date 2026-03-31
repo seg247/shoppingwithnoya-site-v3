@@ -46,11 +46,14 @@ export function useFeedData() {
 export function filterAndSort(deals: Deal[], filters: FilterState): Deal[] {
   let result = [...deals];
 
-  // Category filter
-  if (filters.category === 'fire') {
-    result = result.filter((d) => d.rating === 'FIRE' || d.rating === 'HOT');
-  } else if (filters.category !== 'all') {
-    result = result.filter((d) => d.category === filters.category);
+  // Category filter — multi-select
+  if (filters.categories.size > 0) {
+    result = result.filter((d) => {
+      // "fire" is a special key matching FIRE + HOT ratings
+      if (filters.categories.has('fire') && (d.rating === 'FIRE' || d.rating === 'HOT')) return true;
+      // Match by category name
+      return filters.categories.has(d.category);
+    });
   }
 
   // Sort

@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import FilterBar from '../../src/components/feed/FilterBar';
 
 describe('FilterBar', () => {
-  const defaultFilters = { category: 'all', sort: 'latest' };
+  const defaultFilters = { categories: new Set<string>(), sort: 'latest' };
 
   it('renders all chips', () => {
     render(<FilterBar filters={defaultFilters} onChange={() => {}} />);
@@ -14,25 +14,42 @@ describe('FilterBar', () => {
     expect(screen.getByText('Latest')).toBeInTheDocument();
   });
 
-  it('calls onChange on click', async () => {
+  it('calls onChange with category added on click', async () => {
     const handler = vi.fn();
     const user = userEvent.setup();
     render(<FilterBar filters={defaultFilters} onChange={handler} />);
     await user.click(screen.getByText('Electronics'));
-    expect(handler).toHaveBeenCalledWith(expect.objectContaining({ category: 'Electronics' }));
+    expect(handler).toHaveBeenCalledWith(
+      expect.objectContaining({ categories: new Set(['Electronics']) })
+    );
   });
 
-  it('shows active state', () => {
-    render(<FilterBar filters={{ ...defaultFilters, category: 'Electronics' }} onChange={() => {}} />);
-    const btn = screen.getByText('Electronics');
-    expect(btn.getAttribute('aria-pressed')).toBe('true');
+  it('shows active state for selected categories', () => {
+    const filters = { categories: new Set(['Electronics']), sort: 'latest' };
+    render(<FilterBar filters={filters} onChange={() => {}} />);
+    expect(screen.getByText('Electronics').getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByText('All').getAttribute('aria-pressed')).toBe('false');
   });
 
   it('toggles off when clicking active filter', async () => {
     const handler = vi.fn();
     const user = userEvent.setup();
-    render(<FilterBar filters={{ category: 'Electronics', sort: 'latest' }} onChange={handler} />);
+    const filters = { categories: new Set(['Electronics']), sort: 'latest' };
+    render(<FilterBar filters={filters} onChange={handler} />);
     await user.click(screen.getByText('Electronics'));
-    expect(handler).toHaveBeenCalledWith(expect.objectContaining({ category: 'all' }));
+    expect(handler).toHaveBeenCalledWith(
+      expect.objectContaining({ categories: new Set() })
+    );
+  });
+
+  it('All clears all selected categories', async () => {
+    const handler = vi.fn();
+    const user = userEvent.setup();
+    const filters = { categories: new Set(['Electronics', 'Beauty']), sort: 'latest' };
+    render(<FilterBar filters={filters} onChange={handler} />);
+    await user.click(screen.getByText('All'));
+    expect(handler).toHaveBeenCalledWith(
+      expect.objectContaining({ categories: new Set() })
+    );
   });
 });

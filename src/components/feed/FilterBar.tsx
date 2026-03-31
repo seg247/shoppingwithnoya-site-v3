@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { FILTER_CATEGORIES, SORT_OPTIONS } from '../../lib/constants';
 
 export interface FilterState {
-  category: string;
+  categories: Set<string>;
   sort: string;
 }
 
@@ -39,41 +39,54 @@ const inactiveChip: React.CSSProperties = {
 };
 
 export default function FilterBar({ filters, onChange }: Props) {
-  // Sync from URL on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const cat = params.get('cat') || 'all';
+    const cats = params.get('cat');
     const sort = params.get('sort') || 'latest';
-    if (cat !== filters.category || sort !== filters.sort) {
-      onChange({ category: cat, sort });
+    if (cats) {
+      const set = new Set(cats.split(','));
+      onChange({ categories: set, sort });
+    } else if (sort !== filters.sort) {
+      onChange({ ...filters, sort });
     }
   }, []);
 
-  const update = (partial: Partial<FilterState>) => {
-    const next = { ...filters, ...partial };
-    onChange(next);
+  const syncUrl = (next: FilterState) => {
     const params = new URLSearchParams();
-    if (next.category !== 'all') params.set('cat', next.category);
+    if (next.categories.size > 0) params.set('cat', [...next.categories].join(','));
     if (next.sort !== 'latest') params.set('sort', next.sort);
     const qs = params.toString();
     history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname);
   };
 
-  // Toggle: clicking active chip clears it (goes back to default)
   const toggleCategory = (key: string) => {
-    if (filters.category === key) {
-      update({ category: 'all' });
-    } else {
-      update({ category: key });
+    if (key === 'all') {
+      // "All" clears all filters
+      const next = { ...filters, categories: new Set<string>() };
+      onChange(next);
+      syncUrl(next);
+      return;
     }
+    const cats = new Set(filters.categories);
+    if (cats.has(key)) {
+      cats.delete(key);
+    } else {
+      cats.add(key);
+    }
+    const next = { ...filters, categories: cats };
+    onChange(next);
+    syncUrl(next);
   };
 
   const toggleSort = (key: string) => {
-    if (filters.sort === key) {
-      update({ sort: 'latest' });
-    } else {
-      update({ sort: key });
-    }
+    const next = { ...filters, sort: filters.sort === key ? 'latest' : key };
+    onChange(next);
+    syncUrl(next);
+  };
+
+  const isActive = (key: string) => {
+    if (key === 'all') return filters.categories.size === 0;
+    return filters.categories.has(key);
   };
 
   return (
@@ -100,9 +113,9 @@ export default function FilterBar({ filters, onChange }: Props) {
       {FILTER_CATEGORIES.map((c) => (
         <button
           key={c.key}
-          style={filters.category === c.key ? activeChip : inactiveChip}
+          style={isActive(c.key) ? activeChip : inactiveChip}
           onClick={() => toggleCategory(c.key)}
-          aria-pressed={filters.category === c.key}
+          aria-pressed={isActive(c.key)}
         >
           {c.label}
         </button>
