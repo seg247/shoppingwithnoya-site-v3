@@ -56,6 +56,7 @@ export default function StickyNav({ onSearchClick }: Props) {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
         <button
+          onClick={() => window.dispatchEvent(new CustomEvent('noya:toggleSaved'))}
           aria-label={`Saved deals${savedCount > 0 ? ` (${savedCount})` : ''}`}
           style={{
             position: 'relative',
