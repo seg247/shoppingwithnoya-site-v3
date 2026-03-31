@@ -111,5 +111,29 @@ ul, ol { list-style: none; }
   100% { transform: translateX(-50%) scale(1); opacity: 1; }
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 0; height: 0; }
+/* Custom scrollbar — themed to match the site */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* Firefox scrollbar */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    scrollbar-color: #3A3A3C transparent;
+  }
+}
