@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Deal, SiteData } from '../lib/data';
 import { fetchDeals } from '../lib/data';
-import { parsePrice } from '../lib/format';
 import { POLL_INTERVAL_MS } from '../lib/constants';
 import type { FilterState } from '../components/feed/FilterBar';
 
@@ -49,18 +48,9 @@ export function filterAndSort(deals: Deal[], filters: FilterState): Deal[] {
 
   // Category filter
   if (filters.category === 'fire') {
-    result = result.filter((d) => d.rating === 'FIRE');
+    result = result.filter((d) => d.rating === 'FIRE' || d.rating === 'HOT');
   } else if (filters.category !== 'all') {
     result = result.filter((d) => d.category === filters.category);
-  }
-
-  // Price filter
-  if (filters.maxPrice !== 'any') {
-    const max = parseInt(filters.maxPrice, 10);
-    result = result.filter((d) => {
-      const p = parsePrice(d.price);
-      return p !== null && p <= max;
-    });
   }
 
   // Sort

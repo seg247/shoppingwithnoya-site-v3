@@ -14,7 +14,7 @@ describe('DealCard', () => {
   it('renders with full data', () => {
     render(<DealCard deal={baseDeal} isSaved={false} onToggleSave={() => {}} />);
     expect(screen.getByText('Test Product')).toBeInTheDocument();
-    expect(screen.getByText('View Deal')).toBeInTheDocument();
+    expect(screen.getByText('Get This Deal')).toBeInTheDocument();
     expect(screen.getByText('#ad')).toBeInTheDocument();
     expect(screen.getByText('-40%')).toBeInTheDocument();
   });

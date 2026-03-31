@@ -8,6 +8,7 @@ import TimeAgo from '../common/TimeAgo';
 import CategoryChip from '../common/CategoryChip';
 import ShareButton from '../common/ShareButton';
 import ImagePlaceholder from './ImagePlaceholder';
+import { BookmarkIcon, ExternalLinkIcon } from '../common/Icons';
 
 interface Props {
   deal: Deal;
@@ -24,11 +25,11 @@ export default function DealCard({ deal, isSaved, onToggleSave }: Props) {
     <article
       style={{
         background: 'var(--color-card)',
-        borderRadius: 'var(--radius-xl)',
+        borderRadius: '16px',
         boxShadow: 'var(--shadow-card)',
         overflow: 'hidden',
-        transition: 'box-shadow var(--transition-normal)',
         opacity: isExpired ? 0.6 : 1,
+        border: '1px solid var(--color-border)',
       }}
     >
       {/* Image */}
@@ -50,19 +51,20 @@ export default function DealCard({ deal, isSaved, onToggleSave }: Props) {
           <ImagePlaceholder category={deal.category} />
         )}
         {/* Overlays */}
-        <div style={{ position: 'absolute', bottom: '8px', left: '8px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+        <div style={{ position: 'absolute', bottom: '10px', left: '10px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           <RatingBadge rating={deal.rating} />
           {deal.discount > 0 && (
             <span
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                padding: '2px 8px',
-                borderRadius: '6px',
-                fontSize: '11px',
+                padding: '3px 10px',
+                borderRadius: '8px',
+                fontSize: '12px',
                 fontWeight: 700,
                 color: '#fff',
-                backgroundColor: 'rgba(0,0,0,0.7)',
+                background: 'rgba(0,0,0,0.65)',
+                backdropFilter: 'blur(4px)',
               }}
             >
               -{deal.discount}%
@@ -72,17 +74,18 @@ export default function DealCard({ deal, isSaved, onToggleSave }: Props) {
       </div>
 
       {/* Content */}
-      <div style={{ padding: 'var(--spacing-md)' }}>
+      <div style={{ padding: '14px 16px 16px' }}>
         <h3
           style={{
             fontSize: '15px',
             fontWeight: 600,
-            lineHeight: 1.3,
+            lineHeight: 1.4,
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            marginBottom: 'var(--spacing-sm)',
+            marginBottom: '8px',
+            color: 'var(--color-text)',
           }}
         >
           {deal.title}
@@ -90,13 +93,14 @@ export default function DealCard({ deal, isSaved, onToggleSave }: Props) {
 
         <PriceDisplay price={deal.price} discount={deal.discount} />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '8px 0', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '10px 0 14px', flexWrap: 'wrap' }}>
           <CategoryChip category={deal.category} />
+          <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>·</span>
           <TimeAgo ts={deal.ts} />
         </div>
 
         {/* Action Row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: 'var(--spacing-sm)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <a
             href={deal.url}
             target="_blank"
@@ -106,40 +110,47 @@ export default function DealCard({ deal, isSaved, onToggleSave }: Props) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              height: '48px',
+              gap: '8px',
+              height: '44px',
               background: isExpired ? 'var(--color-text-secondary)' : 'var(--color-cta)',
               color: '#fff',
-              borderRadius: 'var(--radius-sm)',
+              borderRadius: '10px',
               fontWeight: 600,
               fontSize: '14px',
-              transition: 'background var(--transition-fast)',
               textDecoration: 'none',
+              transition: 'opacity 150ms',
             }}
           >
-            {isExpired ? 'May Be Expired' : 'View Deal'}
+            {isExpired ? 'May Be Expired' : (
+              <>
+                <ExternalLinkIcon size={15} />
+                Get This Deal
+              </>
+            )}
           </a>
           <ShareButton deal={deal} />
           <button
             onClick={onToggleSave}
             aria-label={isSaved ? 'Remove from saved' : 'Save deal'}
             style={{
-              width: '44px',
-              height: '44px',
+              width: '42px',
+              height: '42px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: '18px',
-              background: 'var(--color-overlay)',
-              transition: 'background var(--transition-fast)',
+              borderRadius: '10px',
+              color: isSaved ? 'var(--color-cta)' : 'var(--color-text-secondary)',
+              transition: 'all 150ms ease',
+              background: 'transparent',
+              border: '1.5px solid var(--color-border)',
             }}
           >
-            {isSaved ? '🔖' : '🏷️'}
+            <BookmarkIcon filled={isSaved} size={18} />
           </button>
         </div>
 
         {/* FTC Disclosure */}
-        <p style={{ fontSize: '10px', color: 'var(--color-text-secondary)', marginTop: '6px' }}>
+        <p style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginTop: '8px', letterSpacing: '0.02em' }}>
           #ad
         </p>
       </div>

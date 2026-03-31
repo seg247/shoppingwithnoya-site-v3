@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import type { Deal } from '../../lib/data';
 import { SHARE_TARGETS, generateShareUrl, nativeShare, copyToClipboard } from '../../lib/share';
+import { ShareIcon } from './Icons';
 
 interface Props {
   deal: Deal;
@@ -38,18 +39,19 @@ export default function ShareButton({ deal }: Props) {
         onClick={handleClick}
         aria-label="Share this deal"
         style={{
-          width: '44px',
-          height: '44px',
+          width: '42px',
+          height: '42px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: 'var(--radius-sm)',
-          fontSize: '18px',
-          transition: 'background var(--transition-fast)',
-          background: 'var(--color-overlay)',
+          borderRadius: '10px',
+          color: 'var(--color-text-secondary)',
+          transition: 'all 150ms ease',
+          background: 'transparent',
+          border: '1.5px solid var(--color-border)',
         }}
       >
-        ↗
+        <ShareIcon size={18} />
       </button>
       {open && (
         <div
@@ -58,12 +60,13 @@ export default function ShareButton({ deal }: Props) {
             position: 'absolute',
             bottom: '100%',
             right: 0,
-            marginBottom: '4px',
+            marginBottom: '6px',
             background: 'var(--color-card)',
-            borderRadius: 'var(--radius-md)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-            padding: '4px 0',
-            minWidth: '160px',
+            borderRadius: '12px',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)',
+            border: '1px solid var(--color-border)',
+            padding: '6px',
+            minWidth: '180px',
             zIndex: 50,
           }}
         >
@@ -77,14 +80,20 @@ export default function ShareButton({ deal }: Props) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
-                padding: '8px 12px',
+                gap: '10px',
+                padding: '10px 12px',
                 fontSize: '14px',
-                transition: 'background var(--transition-fast)',
+                borderRadius: '8px',
+                color: 'var(--color-text)',
+                textDecoration: 'none',
+                transition: 'background 100ms',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-overlay)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               onClick={() => setOpen(false)}
             >
-              {t.icon} {t.name}
+              <span style={{ fontSize: '16px', width: '20px', textAlign: 'center' }}>{t.icon}</span>
+              <span>{t.name}</span>
             </a>
           ))}
           <button
@@ -93,14 +102,20 @@ export default function ShareButton({ deal }: Props) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
-              padding: '8px 12px',
+              gap: '10px',
+              padding: '10px 12px',
               fontSize: '14px',
               width: '100%',
               textAlign: 'left',
+              borderRadius: '8px',
+              color: 'var(--color-text)',
+              transition: 'background 100ms',
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-overlay)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
-            📋 Copy Link
+            <span style={{ fontSize: '16px', width: '20px', textAlign: 'center' }}>🔗</span>
+            <span>Copy Link</span>
           </button>
         </div>
       )}
@@ -113,13 +128,15 @@ export default function ShareButton({ deal }: Props) {
             transform: 'translateX(-50%)',
             background: 'var(--color-text)',
             color: 'var(--color-bg)',
-            padding: '8px 16px',
-            borderRadius: 'var(--radius-sm)',
+            padding: '10px 20px',
+            borderRadius: '10px',
             fontSize: '14px',
+            fontWeight: 500,
             zIndex: 100,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
           }}
         >
-          Link copied!
+          ✓ Link copied!
         </div>
       )}
     </div>

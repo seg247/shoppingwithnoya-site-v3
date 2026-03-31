@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
-import { FILTER_CATEGORIES, PRICE_FILTERS, SORT_OPTIONS } from '../../lib/constants';
+import { useEffect } from 'react';
+import { FILTER_CATEGORIES, SORT_OPTIONS } from '../../lib/constants';
 
 export interface FilterState {
   category: string;
-  maxPrice: string;
   sort: string;
 }
 
@@ -15,13 +14,13 @@ interface Props {
 const chipBase: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
-  padding: '6px 14px',
+  padding: '7px 16px',
   borderRadius: '20px',
   fontSize: '13px',
   fontWeight: 500,
   whiteSpace: 'nowrap',
   border: '1.5px solid var(--color-border)',
-  transition: 'all var(--transition-fast)',
+  transition: 'all 150ms ease',
   cursor: 'pointer',
   flexShrink: 0,
 };
@@ -36,7 +35,7 @@ const activeChip: React.CSSProperties = {
 const inactiveChip: React.CSSProperties = {
   ...chipBase,
   background: 'var(--color-card)',
-  color: 'var(--color-text)',
+  color: 'var(--color-text-secondary)',
 };
 
 export default function FilterBar({ filters, onChange }: Props) {
@@ -44,10 +43,9 @@ export default function FilterBar({ filters, onChange }: Props) {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const cat = params.get('cat') || 'all';
-    const price = params.get('price') || 'any';
     const sort = params.get('sort') || 'latest';
-    if (cat !== filters.category || price !== filters.maxPrice || sort !== filters.sort) {
-      onChange({ category: cat, maxPrice: price, sort });
+    if (cat !== filters.category || sort !== filters.sort) {
+      onChange({ category: cat, sort });
     }
   }, []);
 
@@ -56,10 +54,26 @@ export default function FilterBar({ filters, onChange }: Props) {
     onChange(next);
     const params = new URLSearchParams();
     if (next.category !== 'all') params.set('cat', next.category);
-    if (next.maxPrice !== 'any') params.set('price', next.maxPrice);
     if (next.sort !== 'latest') params.set('sort', next.sort);
     const qs = params.toString();
     history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname);
+  };
+
+  // Toggle: clicking active chip clears it (goes back to default)
+  const toggleCategory = (key: string) => {
+    if (filters.category === key) {
+      update({ category: 'all' });
+    } else {
+      update({ category: key });
+    }
+  };
+
+  const toggleSort = (key: string) => {
+    if (filters.sort === key) {
+      update({ sort: 'latest' });
+    } else {
+      update({ sort: key });
+    }
   };
 
   return (
@@ -70,37 +84,37 @@ export default function FilterBar({ filters, onChange }: Props) {
         display: 'flex',
         gap: '8px',
         overflowX: 'auto',
-        padding: '8px var(--spacing-md)',
+        flexWrap: 'wrap',
+        padding: '10px var(--spacing-md)',
         WebkitOverflowScrolling: 'touch',
+        scrollbarWidth: 'none',
       }}
     >
+      <style>{`
+        [role="toolbar"]::-webkit-scrollbar { display: none; }
+        @media (max-width: 640px) {
+          [role="toolbar"] { flex-wrap: nowrap !important; }
+        }
+      `}</style>
+
       {FILTER_CATEGORIES.map((c) => (
         <button
           key={c.key}
           style={filters.category === c.key ? activeChip : inactiveChip}
-          onClick={() => update({ category: c.key })}
+          onClick={() => toggleCategory(c.key)}
           aria-pressed={filters.category === c.key}
         >
           {c.label}
         </button>
       ))}
-      <span style={{ width: '1px', background: 'var(--color-border)', flexShrink: 0, margin: '4px 0' }} />
-      {PRICE_FILTERS.map((p) => (
-        <button
-          key={p.key}
-          style={filters.maxPrice === p.key ? activeChip : inactiveChip}
-          onClick={() => update({ maxPrice: p.key })}
-          aria-pressed={filters.maxPrice === p.key}
-        >
-          {p.label}
-        </button>
-      ))}
-      <span style={{ width: '1px', background: 'var(--color-border)', flexShrink: 0, margin: '4px 0' }} />
+
+      <span style={{ width: '1px', background: 'var(--color-border)', flexShrink: 0, margin: '4px 0', alignSelf: 'stretch' }} />
+
       {SORT_OPTIONS.map((s) => (
         <button
           key={s.key}
           style={filters.sort === s.key ? activeChip : inactiveChip}
-          onClick={() => update({ sort: s.key })}
+          onClick={() => toggleSort(s.key)}
           aria-pressed={filters.sort === s.key}
         >
           {s.label}

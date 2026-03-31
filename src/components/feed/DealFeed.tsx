@@ -19,7 +19,7 @@ interface Props {
 export default function DealFeed({ initialDeals }: Props) {
   const { deals, newDeals, loading, error, refresh, mergeNewDeals } = useFeedData();
   const { isSaved, toggleSave } = useSavedDeals();
-  const [filters, setFilters] = useState<FilterState>({ category: 'all', maxPrice: 'any', sort: 'latest' });
+  const [filters, setFilters] = useState<FilterState>({ category: 'all', sort: 'latest' });
   const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
