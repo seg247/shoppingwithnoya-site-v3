@@ -17,7 +17,7 @@ interface Props {
 
 export default function DealCard({ deal, isSaved, onToggleSave }: Props) {
   const [imgError, setImgError] = useState(false);
-  const thumbUrl = rewriteImageUrl(deal.imageUrl, 'thumb');
+  const thumbUrl = rewriteImageUrl(deal.imageUrl, 'thumb', deal.asin);
   const isExpired = (Date.now() - new Date(deal.ts).getTime()) > EXPIRED_HOURS * 3600_000;
 
   return (
