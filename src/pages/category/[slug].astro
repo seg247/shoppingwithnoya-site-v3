@@ -1,0 +1,43 @@
+---
+import Base from '../../layouts/Base.astro';
+import StickyNav from '../../components/nav/StickyNav';
+import DealFeed from '../../components/feed/DealFeed';
+
+const categories = [
+  'Electronics', 'Home & Kitchen', 'Beauty', 'Fashion', 'Toys',
+  'Sports', 'Pet Supplies', "Today's Deal", 'Health & Household',
+  'Automotive', 'Tools & Home Improvement', 'Office Products', 'Baby', 'Grocery',
+];
+
+function slugify(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+export async function getStaticPaths() {
+  const categories = [
+    'Electronics', 'Home & Kitchen', 'Beauty', 'Fashion', 'Toys',
+    'Sports', 'Pet Supplies', "Today's Deal", 'Health & Household',
+    'Automotive', 'Tools & Home Improvement', 'Office Products', 'Baby', 'Grocery',
+  ];
+  function slugify(s: string): string {
+    return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+  return categories.map((cat) => ({
+    params: { slug: slugify(cat) },
+    props: { category: cat },
+  }));
+}
+
+const { category } = Astro.props;
+
+const fs = await import('node:fs');
+const path = await import('node:path');
+const raw = fs.readFileSync(path.join(process.cwd(), 'public', 'site-data.json'), 'utf-8');
+const data = JSON.parse(raw);
+const catDeals = data.posts.filter((p: any) => p.category === category).slice(0, 5);
+---
+<Base title={`${category} Deals — Shopping With Noya`} description={`Best ${category} deals curated daily.`}>
+  <StickyNav client:load />
+  <h1 style="max-width:640px;margin:16px auto 0;padding:0 12px;font-size:20px;font-weight:700;">{category}</h1>
+  <DealFeed client:load initialDeals={catDeals} />
+</Base>

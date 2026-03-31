@@ -1,0 +1,30 @@
+---
+interface Props {
+  deal: {
+    title: string;
+    price: string | null;
+    url: string;
+    imageUrl: string | null;
+    asin: string;
+    rating: string;
+  };
+}
+const { deal } = Astro.props;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: deal.title,
+  url: deal.url,
+  ...(deal.imageUrl ? { image: deal.imageUrl } : {}),
+  ...(deal.price ? {
+    offers: {
+      '@type': 'Offer',
+      price: deal.price.replace(/[^0-9.]/g, ''),
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: deal.url,
+    },
+  } : {}),
+};
+---
+<script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
